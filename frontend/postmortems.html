@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Morty</title>
+    <link rel="stylesheet" href="styles/postmortems.css" type="text/css">
+    <link rel="stylesheet" href="http://lab.lepture.com/editor/editor.css"/>
+    <!-- FontAwesome -->
+    <script src="https://kit.fontawesome.com/3bc7d78e54.js" crossorigin="anonymous"></script>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/bootstrap.tagsinput/0.4.2/bootstrap-tagsinput.css" />
+</head>
+<body>
+    <div class="nav-container">
+        <nav class="navbar">
+            <h1 id="navbar-logo"><i class="fas fa-book-dead"></i> MORTY</h1>
+            <ul class="nav-menu" id="nav-menu">
+                <!-- <li><a href="postmortems.html" class="nav-links">Postmortems</a></li> -->
+            </ul>
+        </nav>
+    </div>
+
+    <main>
+        <div class="postmortem-panel">
+            <button class="btn btn-add-postmortem" id="createPostmortem">
+                <i class="fas fa-cross"></i>
+                New Postmortem
+            </button>
+        </div>
+
+        <div class="postmortems-container">
+            <div class="table-fields">
+                <div class="field"></div>
+                <div class="field">Title&nbsp;<i class="fas fa-sort" id="sort-title"></i></div>
+                <div class="field">Start Time&nbsp;<i class="fas fa-sort" id="sort-start-time"></i></div>
+                <div class="field">End Time&nbsp;<i class="fas fa-sort" id="sort-end-time"></i></div>
+                <div class="field">Detect Time&nbsp;<i class="fas fa-sort" id="sort-detect-time"></i></div>
+                <div class="field">Severity&nbsp;<i class="fas fa-sort" id="sort-severity"></i></div>
+            </div>
+            <div class="postmortems-table" id="postmortems-table">
+                <!-- from JS -->
+            </div>
+        </div>
+
+        <!-- Add New Postmortem modal -->
+        <div class="container postmortem-modal" id="newPostmortemContainer">
+            <div class="title-close">
+                <h4>Create Postmortem</h4>
+                <span class="close-btn" onclick="this.parentElement.parentElement.style.display='none';">&times;</span>
+            </div>
+
+            <form class="postmortem-form">
+                <div class="form-group">
+                    <label for="title">Title</label>
+                    <input type="text" class="postmortem-title-form" id="title" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="start-time">Start Time</label>
+                    <input type="datetime-local" class="start-date" id="start-date" name="start-date" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}" required>
+                </div>
+                <div class="form-group">
+                    <label for="end-time">End Time</label>
+                    <input type="datetime-local" class="end-date" id="end-date" name="end-date" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}" required>
+                </div>
+                <div class="form-group">
+                    <label for="detect-time">Detect Time</label>
+                    <input type="datetime-local" class="detect-date" id="detect-date" name="detect-date" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}" required>
+                </div>
+                <div class="form-group">
+                    <label for="severity">Severity</label>
+                    <select class="select-picker" id="severity" name="severity" data-show-subtext="true" data-live-search="true" data-size="3" required>
+                        <option selected disabled>Select</option>
+                        <option>High</option>
+                        <option>Medium</option>
+                        <option>Low</option>
+                    </select>
+                </div>
+
+                <div class="errors-container">
+                    <small id="errors"></small>
+                </div>
+                <button type="submit" class="btn btn-secondary" id="btn-postmortem-close">Close</button>
+                <button type="submit" class="btn btn-primary" id="btn-postmortem-add"><i class="fas fa-plus"></i> Add</button>
+            </form>
+        </div>
+
+        <!-- Edit Postmortem -->
+        <div class="editPostmortemModal container" id="showPostmortemContainer">
+            <div class="title-close">
+                <h4>Postmortem</h4>
+                <span class="close-btn" onclick="this.parentElement.parentElement.style.display='none';">&times;</span>
+            </div>
+            <form class="postmortem-form">
+                <div class="form-group">
+                    <input type="text" class="postmortem-title" id="title-update" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="start-time">Start Time</label>
+                    <input type="datetime-local" class="start-time" id="start-time-update" name="start-time-update" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}" required>
+                    <label for="total-impact-time" class="total-impact-time">Total impact time</label>
+                    <input type="text" class="total-impact-time-field" id="total-impact-time" name="total-impact-time" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="end-time">End Time</label>
+                    <input type="datetime-local" class="end-time" id="end-time-update" name="end-time-update" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}" required>
+                    <label for="time-undetected" class="time-undetected">Time undetected</label>
+                    <input type="text" class="time-undetected-field" id="time-undetected" name="time-undetected" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="detect-time">Detect Time</label>
+                    <input type="datetime-local" class="detect-date" id="detect-date-update" name="detect-date-update" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}" required>
+                    <label for="time-to-resolve" class="time-to-resolve">Time to resolve</label>
+                    <input type="text" class="time-to-resolve-field" id="time-to-resolve" name="time-to-resolve" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="severity">Severity</label>
+                    <select class="select-picker" id="severity-update" name="severity-update" data-show-subtext="true" data-live-search="true" data-size="3" required>
+                        <option>High</option>
+                        <option>Medium</option>
+                        <option>Low</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="contact">Contact</label>
+                    <input type="text" class="contact" id="contact" name="contact" placeholder="Enter username" required>
+                    <label for="owner-team">Team</label>
+                    <input type="text" class="owner-team" id="owner-team" name="owner-team" placeholder="Enter your Team" required>
+                </div>
+                <div class="form-group">
+                    <label for="meeting">Meeting</label>
+                    <input type="text" class="meeting" id="meeting" name="meeting" placeholder="Enter Google calendar event URL" required>
+                </div>
+                <!-- What happened? -->
+                <div class="form-group">
+                    <h2>What Happened?</h2>
+                </div>
+                <div class="form-group">
+                    <textarea class="what-happened" id="what-happened" name="what-happened" data-preview="#preview" placeholder="Enter detail information about the postmortem..." cols="60" rows="20"></textarea>
+                    <div id="what-happened-preview"></div>
+                </div>
+                <!-- Tags -->
+                <div class="form-group">
+                    <h2>Tags</h2>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="tags" name="tags" value="" data-role="tagsinput">
+                </div>
+                <!-- History -->
+                <div class="form-group">
+                    <h2>Postmortem History</h2>
+                </div>
+                <button type="submit" class="btn btn-primary" id="update-postmortem-btn">Update Postmortem</button>
+                <div class="errorsContainer">
+                    <small id="update-errors"></small>
+                </div>
+            </form>
+        </div>
+    </main>
+    <script src="js/postmortems.js" type="module"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+    <script src="//cdn.jsdelivr.net/bootstrap.tagsinput/0.4.2/bootstrap-tagsinput.min.js" crossorigin="anonymous"></script>
+    <!-- Markdown -->
+    <script type="text/javascript" src="http://lab.lepture.com/editor/editor.js"></script>
+    <script type="text/javascript" src="http://lab.lepture.com/editor/marked.js"></script>
+</body>
+</html>
