@@ -1,0 +1,40 @@
+version: '3.7'
+
+services:
+   proxy:
+      build: 
+        context: .
+        dockerfile: nginx.Dockerfile
+      image: nginx-custom
+      ports:
+        - '80:80'
+   
+   web:
+      image: httpd
+      volumes:
+        - ./frontend:/usr/local/apache2/htdocs/
+
+   app:
+      restart: always
+      build: .
+      environment:
+        - APP_PORT=3000
+        - DB_URI=mongodb://mongodb:27017/morty 
+        - APP_SECRET=s3cr3t
+        - ADMIN_PASS=m0rty
+      ports:
+        - "3000:3000"
+      links:
+        - mongodb
+   mongodb:
+      image: mongo:latest
+      environment:
+        - MONGO_INITDB_ROOT_USERNAME=root
+        - MONGO_INITDB_ROOT_PASSWORD=rootpassword
+      ports:
+        - "27017:27017"
+      volumes:
+        - mongodb-data-container:/data/db
+
+volumes:
+  mongodb-data-container:
